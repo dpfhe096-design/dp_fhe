@@ -1,4 +1,4 @@
-#define PROFILE // nodp 
+#define PROFILE // No-DP training with regularization 
 
 #include "openfhe.h"
 #include "util/crypto.h"    
@@ -196,7 +196,6 @@ public:
         // sigmoid coeff for compas
         // 0.5, 0.1697807, 0.0, -0.0031215, 0.0, 0.0000270, 0.0, -0.0000001
         // sigmoid coeff for mnist
-        // 0.5, 0.1226909, 0.0, -0.0010417, 0.0, 0.0000039
         0.5, 0.15266035, 0, -0.00221240, 0, 0.00001614, 0, -0.00000005
         // sigmoid coeff for adult
         // 0.5, 0.1778298, 0.0, -0.0036922, 0.0, 0.0000366, 0.0, -0.0000001
@@ -205,43 +204,9 @@ public:
     };
 
     std::vector<double> l2norm_coeffs={
-        // sqrt approx coeff for adult:
-        // 2.8680857437039592e-01, 9.3318419097809968e-01, -2.7693691155390299e-01, 5.8571484180183764e-02, -6.2904597034056531e-03, 2.6212278310731299e-04
-        // sqrt approx coeff for mnist (0, 100):
     0.6253335362143935, 0.3959562477220996, -0.01983042717565514, 0.0007276954759648647, -1.5600617699380835e-05, 1.8934212216839758e-07, -1.2051355117954955e-09, 3.122032538422496e-12    
     };
-    // std::vector<double> inverse_coeffs={
-    //     // for adult:
-    //     9.234581052762, -36.542528473571, 80.951217223236, -109.847286516978, 93.550716808160, -48.865496386929, 14.324540312660, -1.805782690271};
-    std::vector<double> inverseNR_interval={0.004, 50};
-    int inverseNR_iteration=6;
-
     
-    
-
-    //     // ==== TEST: Only for testing ====
-    //     KeyPair<DCRTPoly> keyPair
-    //     ):
-    //     // ==== TEST: Only for testing ====
-    //     keyPair(keyPair)
-    //     {
-        
-    //     this->learning_rate = config_json["learning_rate"].get<double>();
-    //     this->T = config_json["T"].get<int>();
-
-    //     this->C = 1;
-    //     this->loss = 0.5;
-        
-    //     // Read coefficients
-    //     this->sigmoid_coeffs = config_json["coeffs"]["sigmoid"].get<std::vector<double>>();
-
-    //     this->l2norm_coeffs = config_json["coeffs"]["l2norm"].get<std::vector<double>>();
-        
-    //     this->inverse_coeffs = config_json["coeffs"]["inverse"].get<std::vector<double>>();
-
-    //     this->inverseNR_interval = config_json["inverseNR_params"]["interval"].get<std::vector<double>>();
-    //     this->inverseNR_iteration = config_json["inverseNR_params"]["iteration"].get<int>();
-    // };
 
     // Merged and optimized function to compute the entire gradient in one pass.
     Ciphertext<DCRTPoly> calculate_gradient(
