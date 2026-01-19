@@ -48,6 +48,14 @@ This example demonstrates how to run encrypted training on **multiple datasets**
 The workflow includes three stages: **encryption**, **secure training**, and **decryption**.
 
 ```bash
+#!/bin/bash
+# ------------------------
+# SLURM Job Settings
+# ------------------------
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=50
+#SBATCH --mem=256gb              # memory allocation
+
 # ------------------------
 # Environment Setup
 # ------------------------
