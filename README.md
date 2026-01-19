@@ -17,12 +17,14 @@ At its core, the system securely executes a mini-batch gradient descent algorith
 | Parameter | Value | Description |
 |------------|--------|-------------|
 | **Scheme** | CKKS (RNS variant) | Approximate arithmetic for encrypted real numbers |
-| **Ring dimension (N)** | 32,768 | Supports bootstrapping and high precision |
-| **Scaling moduli** | {60, 59, 59, …} bits | Defines precision at each level |
-| **Secret key distribution** | `UNIFORM_TERNARY` | Efficient and noise-minimizing |
+| **Ring dimension (N)** | 32,768 | Supports bootstrapping and high-precision computation |
+| **Scaling moduli** | {60, 59, 59, …} bits | Automatically generated modulus chain under FLEXIBLEAUTOEXT |
+| **Secret key distribution** | `UNIFORM_TERNARY` | Efficient ternary secret keys with low noise |
 | **Key switch technique** | `HYBRID` | Memory-efficient relinearization |
-| **Scaling technique** | `FLEXIBLEAUTOEXT` | Enables automatic rescaling and bootstrapping |
-| **Multiplicative depth** | ~30+ | Provides approximately 26 usable computation levels after each bootstrapping operation |
+| **Scaling technique** | `FLEXIBLEAUTOEXT` | Automatic rescaling with bootstrapping support |
+| **Multiplicative depth** | \(28 + d_{\text{boot}}\) | Total depth including internal bootstrapping cost |
+| **Levels after bootstrapping** | 28 | Usable computation levels restored per bootstrapping |
+| **Bootstrapping level budget** | {4, 4} | Precision allocation for bootstrapping |
 | **Security level** | ~128-bit (manual) | Achieved with N = 32,768 and 59-bit primes |
 
 ---
@@ -40,32 +42,104 @@ parameters.SetScalingTechnique(FLEXIBLEAUTOEXT);
 parameters.SetKeySwitchTechnique(HYBRID);
 ```
 
-## Example
+## Example Usage
+
+This example demonstrates how to run encrypted training on **multiple datasets** (e.g., MNIST and Credit) using OpenFHE.  
+The workflow includes three stages: **encryption**, **secure training**, and **decryption**.
+
 ```bash
-changeLog="full_train mnist nosie_1 batch=100, log last 100 iter weights"
+# ------------------------
+# Environment Setup
+# ------------------------
+module load gcc/14.2.0
+
+# Set OpenMP parallelism
+export OMP_NUM_THREADS=${SLURM_CPUS_PER_TASK:-1}
+export OMP_PROC_BIND=close
+export OMP_PLACES=cores
+
+# OpenFHE library path
+export LD_LIBRARY_PATH=path to.../openfhe/lib:$LD_LIBRARY_PATH
+
+# ------------------------
+# Shared Parameters
+# ------------------------
 budget1=4
 budget2=4
-dataset_name="mnist"
-save_path="enc_"$dataset_name
-levels=26
-lr=0.041
-T=1000
+levels=28          
+T=1000            
 b_theta=5.0
 b_lambda=0.001
 batch_size=100
-args_enc=("$save_path" "$changeLog" $budget1 $budget2 "$dataset_name" $levels)
-args_train=("$save_path" "$changeLog" $budget1 $budget2 "$dataset_name" $lr $T $b_theta $b_lambda $batch_size)
 
-set -e  
-mkdir -p "$save_path"
-./setup_encrypt.cpp "${args_enc[@]}"
-./model_no_clipping.cpp "${args_train[@]}"
+# ------------------------
+# Dataset Configuration
+# ------------------------
+
+# MNIST dataset
+dataset_name="mnist"
+changeLog="model: clip_train, data=mnist"
+lr=0.041
+dim_m=50           # Number of features/slots for MNIST
+checkpointDir="enc_${dataset_name}"
+
+# Credit dataset (uncomment to use)
+# dataset_name="credit"
+# changeLog="model: clip_train, data=credit"
+# lr=0.06
+# dim_m=24
+# checkpointDir="enc_${dataset_name}"
+
+# ------------------------
+# Paths and Arguments
+# ------------------------
+args_enc=("$checkpointDir" "$changeLog" $budget1 $budget2 "$dataset_name" $levels)
+args_train=("$checkpointDir" "$changeLog" $budget1 $budget2 "$dataset_name" \
+            $lr $T $batch_size)
+
+# ------------------------
+# Build
+# ------------------------
+cd path to.../build
+make
+
+# ------------------------
+# Step 1: Setup & Encryption
+# ------------------------
+set -e
+mkdir -p "$checkpointDir"
+
+echo "====== SETUP & ENCRYPTION ======"
+date
+./setup_encrypt "${args_enc[@]}"
+
+# ------------------------
+# Step 2: Secure Model Training
+# ------------------------
+echo "====== SECURE MODEL TRAINING ======"
+date
+./model_clipping "${args_train[@]}"
+date
+
+# ------------------------
+# Step 3: Decrypt Trained Weights
+# ------------------------
+echo "====== DECRYPT MODEL WEIGHTS ======"
+date
+./decrypt_weight "$checkpointDir" "$dim_m"
+date
+
 ```
 ## Results 
-RAM=47G, machine: rhel8,x86_64,Zen,EPYC-9534 x 50 threads
-|dataset|accuracy|AUROC|Training_time|RAM|machine|
-|------------|--------|-------------|----------------|--------|-----------------------|
-|mnist|95.1%|96%|19.5 hrs|47G|rhel8,x86_64,Zen,EPYC-9534 x 50 threads|
-|adult|95%|95%|19.5 hrs|47G|rhel8,x86_64,Zen,EPYC-9534 x 50 threads|
+## Model performance and training time under FHE (AMD EPYC 9534, multi-threaded)
+**Note:** \(\epsilon=1, \delta=10^{-5}\)
+
+| Data    | Training Model                        | ACC     | AUC     | 10-threads      | 20-threads      | 30-threads      | 50-threads      |
+|---------|--------------------------------------|---------|---------|----------------|----------------|----------------|----------------|
+| mnist   | Algo~\ref{fig:trad_DP-GD_fhe} (DP-SGD) | 95.83%  | 98.88%  | 600.1 sec/iter | 338.0 sec/iter | 283.0 sec/iter | 187.2 sec/iter |
+| mnist   | Algo~\ref{fig:modified_DP-GD_fhe} (No Clip) | 94.18%  | 98.32%  | 148.2 sec/iter | 93.0 sec/iter  | 86.9 sec/iter  | 58.2 sec/iter  |
+| credit  | Algo~\ref{fig:trad_DP-GD_fhe} (DP-SGD) | 78.61%  | 70.60%  | 446.1 sec/iter | 258.7 sec/iter | 227.5 sec/iter | 164.0 sec/iter |
+| credit  | Algo~\ref{fig:modified_DP-GD_fhe} (No Clip) | 77.95%  | 71.39%  | 132.2 sec/iter | 79.4 sec/iter  | 70.4 sec/iter  | 53.7 sec/iter  |
+
 
 
