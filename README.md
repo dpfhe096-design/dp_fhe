@@ -140,7 +140,7 @@ date
 ```
 ## Results 
 ## Model performance and training time under FHE (AMD EPYC 9534, multi-threaded)
-**Note:** `epsilon=1`, `delta=1e-5`, `T=200`, 'lr=0.03 for minist, lr=0.06 for credit'
+**Note:** `epsilon=1`, `delta=1e-5`, `T=200`, `lr=0.03` for minist, `lr=0.06` for credit'
 
 | Data    | Training Model                        | ACC     | AUC     | 10-threads      | 20-threads      | 30-threads      | 50-threads      |
 |---------|--------------------------------------|---------|---------|----------------|----------------|----------------|----------------|
