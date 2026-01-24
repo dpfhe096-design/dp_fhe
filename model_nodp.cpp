@@ -193,12 +193,8 @@ public:
                          loss(loss){};
     // Coefficients for polynomial approximations
     std::vector<double> sigmoid_coeffs = {
-        // sigmoid coeff for compas
-        // 0.5, 0.1697807, 0.0, -0.0031215, 0.0, 0.0000270, 0.0, -0.0000001
         // sigmoid coeff for mnist
         0.5, 0.15527783, 0, -0.00234523, 0, 0.00001789, 0, -0.00000006
-        // sigmoid coeff for adult
-        // 0.5, 0.1778298, 0.0, -0.0036922, 0.0, 0.0000366, 0.0, -0.0000001
        // sigmoid coeff for credit
         // 0.5, 0.18929440, 0, -0.00479001, 0, 0.00006497, 0, -0.00000040
     };
@@ -514,7 +510,7 @@ Ciphertext<DCRTPoly> DP_GD_clipping::fit(
 
 
     // in case the training is not fully complete, restart the train by loading saved weights_enc
-    const uint32_t resume_iter = 1000;
+    const uint32_t resume_iter = 100;
     Ciphertext<DCRTPoly> weights;
     
     std::string weights_enc_path = checkpointDir + "/weights_enc_nodp"+"/weights_iter_"+std::to_string(resume_iter)+".bin";
@@ -624,7 +620,7 @@ Ciphertext<DCRTPoly> DP_GD_clipping::fit(
         checkAndUpdateMaxRAM("\tIter " + std::to_string(t+1) + " / After Weight Update");
 
         // set the iteration for saving the weight
-        if ((t + 1) >=T-100 || (t + 1)%50==0) {
+        if ((t + 1)%5==0) {
            
             // weights_log.push_back(weights);
 
