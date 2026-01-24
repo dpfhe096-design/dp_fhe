@@ -193,14 +193,10 @@ public:
                          loss(loss){};
     // Coefficients for polynomial approximations
     std::vector<double> sigmoid_coeffs = {
-        // sigmoid coeff for compas
-        // 0.5, 0.21763506, 0, -0.00832304, 0, 0.00017120, 0, -0.00000126
         // sigmoid coeff for mnist
-        // 0.5, 0.15266035, 0, -0.00221240, 0, 0.00001614, 0, -0.00000005
-        // sigmoid coeff for adult
-        // 0.5, 0.21486557, 0, -0.00804063, 0, 0.00017484, 0, -0.00000176, 0, 0.00000001
+        // 0.5, 0.15527783, 0, -0.00234523, 0, 0.00001789, 0, -0.00000006
         // sigmoid coeff for credit
-        0.5, 0.19282043, 0, -0.00514345, 0, 0.00007417, 0, -0.00000048
+        0.5, 0.19133350, 0, -0.00499146, 0, 0.00007013, 0, -0.00000044
     };
 
     std::vector<double> l2norm_coeffs={
@@ -635,7 +631,7 @@ Ciphertext<DCRTPoly> DP_GD_clipping::fit(
         checkAndUpdateMaxRAM("\tIter " + std::to_string(t+1) + " / After Weight Update");
 
         // set the iteration for saving the weight
-        if ((t + 1) >=T-100 || (t + 1)%50==0) {
+        if ((t + 1) >=T-50 || (t + 1)%50==0) {
            
             // weights_log.push_back(weights);
 
