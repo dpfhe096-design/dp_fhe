@@ -75,7 +75,7 @@ export LD_LIBRARY_PATH=path to.../openfhe/lib:$LD_LIBRARY_PATH
 budget1=4
 budget2=4
 levels=28          
-T=1000            
+T=200            
 b_theta=5.0
 b_lambda=0.001
 batch_size=100
@@ -87,7 +87,7 @@ batch_size=100
 # MNIST dataset
 dataset_name="mnist"
 changeLog="model: clip_train, data=mnist"
-lr=0.041
+lr=0.03
 dim_m=50           # Number of features/slots for MNIST
 checkpointDir="enc_${dataset_name}"
 
@@ -140,14 +140,14 @@ date
 ```
 ## Results 
 ## Model performance and training time under FHE (AMD EPYC 9534, multi-threaded)
-**Note:** `epsilon=1`, `delta=1e-5`
+**Note:** `epsilon=1`, `delta=1e-5`, `T=200`, 'lr=0.03 for minist, lr=0.06 for credit'
 
 | Data    | Training Model                        | ACC     | AUC     | 10-threads      | 20-threads      | 30-threads      | 50-threads      |
 |---------|--------------------------------------|---------|---------|----------------|----------------|----------------|----------------|
-| mnist   | DP-SGD | 95.83%  | 98.88%  | 600.1 sec/iter | 338.0 sec/iter | 283.0 sec/iter | 187.2 sec/iter |
-| mnist   | Our method | 94.18%  | 98.32%  | 148.2 sec/iter | 93.0 sec/iter  | 86.9 sec/iter  | 58.2 sec/iter  |
-| credit  | DP-SGD | 78.61%  | 70.60%  | 446.1 sec/iter | 258.7 sec/iter | 227.5 sec/iter | 164.0 sec/iter |
-| credit  | Our method | 77.95%  | 71.39%  | 132.2 sec/iter | 79.4 sec/iter  | 70.4 sec/iter  | 53.7 sec/iter  |
+| mnist   | DP-SGD | 93.62%  | 98.21%  | 600.1 sec/iter | 338.0 sec/iter | 283.0 sec/iter | 187.2 sec/iter |
+| mnist   | Our method | 93.99%  | 98.22%  | 148.2 sec/iter | 93.0 sec/iter  | 86.9 sec/iter  | 58.2 sec/iter  |
+| credit  | DP-SGD | 78.00%  | 68.88%  | 446.1 sec/iter | 258.7 sec/iter | 227.5 sec/iter | 164.0 sec/iter |
+| credit  | Our method | 77.99%  | 68.69%  | 132.2 sec/iter | 79.4 sec/iter  | 70.4 sec/iter  | 53.7 sec/iter  |
 
 
 
