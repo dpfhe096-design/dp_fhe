@@ -58,16 +58,13 @@ int main(int argc, char* argv[]) {
     // Build the file paths
     std::string x_path = "../preprocess_datasets/" + dataset_name + "_x_train.csv";
     std::string y_path = "../preprocess_datasets/" + dataset_name + "_y_train.csv";
-    std::string noise_path = "../noise/" + dataset_name + "_noise.csv";
+    std::string noise_path = "../noise_noclip/" + dataset_name + "_noise.csv";
 
     // Read the files directly
     std::vector<std::vector<double>> X_data = readCSV(x_path);
     std::vector<std::vector<double>> Y_data = readCSV(y_path);
     std::vector<std::vector<double>> noise_list_data = readCSV(noise_path);
 
-    // std::vector<std::vector<double>> X_data = readCSV("../preprocess_datasets/adult_x_train.csv");
-    // std::vector<std::vector<double>> Y_data = readCSV("../preprocess_datasets/adult_y_train.csv");
-    // std::vector<std::vector<double>> noise_list_data = readCSV("../noise/adult_noise.csv");
     auto end_read = std::chrono::high_resolution_clock::now();
     std::cout << "Finished data reading in " << std::chrono::duration<double>(end_read - start_read).count() << " seconds." << std::endl;
 
