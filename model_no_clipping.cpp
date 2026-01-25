@@ -1026,7 +1026,7 @@ int main(int argc, char* argv[]) {
         std::cout << "Attempting to generate from CSV..." << getCurrentTime() << std::endl;
         
         // 1. Define path and read plaintext noise CSV
-        std::string noise_path = "../noise_noclip_new/" + dataset_name + "_noise.csv";
+        std::string noise_path = "../noise_noclip/" + dataset_name + "_noise.csv";
         if (!std::filesystem::exists(noise_path)) {
              std::cerr << "Error: Plaintext noise file not found at " << noise_path << std::endl;
              std::cerr << "Cannot proceed without noise data. Please create the CSV or the encrypted .bin file." << std::endl;
