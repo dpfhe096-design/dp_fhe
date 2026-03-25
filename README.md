@@ -16,7 +16,7 @@ At its core, the system securely executes a mini-batch gradient descent algorith
 
 | Parameter | Value | Description |
 |------------|--------|-------------|
-| **Scheme** | CKKS (RNS variant) | Approximate arithmetic for encrypted real numbers |
+| **Scheme** | CKKS  | Approximate arithmetic for encrypted real numbers |
 | **Ring dimension (N)** | 32,768 / 131,072 | Supports bootstrapping and high-precision computation |
 | **Scaling moduli** | {60, 59, 59, …} bits | Automatically generated modulus chain under FLEXIBLEAUTOEXT |
 | **Secret key distribution** | `UNIFORM_TERNARY` | Efficient ternary secret keys with low noise |
