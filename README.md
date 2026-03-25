@@ -22,7 +22,7 @@ At its core, the system securely executes a mini-batch gradient descent algorith
 | **Secret key distribution** | `UNIFORM_TERNARY` | Efficient ternary secret keys with low noise |
 | **Key switch technique** | `HYBRID` | Memory-efficient relinearization |
 | **Scaling technique** | `FLEXIBLEAUTOEXT` | Automatic rescaling with bootstrapping support |
-| **Multiplicative depth** | '28 + d_{boot}' | Total depth including internal bootstrapping cost |
+| **Multiplicative depth** | '28 + depth_{bootstrap}' | Total depth including internal bootstrapping cost |
 | **Levels after bootstrapping** | 28 | Usable computation levels restored per bootstrapping |
 | **Bootstrapping level budget** | {4, 4} | Precision allocation for bootstrapping |
 | **Security level** |  ~128-bit (at N = 131,072) | Full 128-bit security achieved with larger ring dimension |
