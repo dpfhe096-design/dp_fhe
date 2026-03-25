@@ -17,15 +17,15 @@ At its core, the system securely executes a mini-batch gradient descent algorith
 | Parameter | Value | Description |
 |------------|--------|-------------|
 | **Scheme** | CKKS (RNS variant) | Approximate arithmetic for encrypted real numbers |
-| **Ring dimension (N)** | 32,768 | Supports bootstrapping and high-precision computation |
+| **Ring dimension (N)** | 32,768 / 131,072 | Supports bootstrapping and high-precision computation |
 | **Scaling moduli** | {60, 59, 59, …} bits | Automatically generated modulus chain under FLEXIBLEAUTOEXT |
 | **Secret key distribution** | `UNIFORM_TERNARY` | Efficient ternary secret keys with low noise |
 | **Key switch technique** | `HYBRID` | Memory-efficient relinearization |
 | **Scaling technique** | `FLEXIBLEAUTOEXT` | Automatic rescaling with bootstrapping support |
-| **Multiplicative depth** | \(28 + d_{\text{boot}}\) | Total depth including internal bootstrapping cost |
+| **Multiplicative depth** | '28 + d_{boot}' | Total depth including internal bootstrapping cost |
 | **Levels after bootstrapping** | 28 | Usable computation levels restored per bootstrapping |
 | **Bootstrapping level budget** | {4, 4} | Precision allocation for bootstrapping |
-| **Security level** | ~128-bit (manual) | Achieved with N = 32,768 and 59-bit primes |
+| **Security level** |  ~128-bit (at N = 131,072) | Full 128-bit security achieved with larger ring dimension |
 
 ---
 
@@ -139,15 +139,35 @@ date
 
 ```
 ## Results 
-## Model performance and training time under FHE (AMD EPYC 9534, multi-threaded)
-**Note:** `epsilon=1`, `delta=1e-5`, `T=200`, `lr=0.03` for minist, `lr=0.06` for credit'
+## Model performance and training time under FHE 
+---
+**Train Config:** `epsilon=1`, `delta=1e-5`, `T=200`, `lr=0.03` (mnist), `lr=0.06` (credit)
 
-| Data    | Training Model                        | ACC     | AUC     | 10-threads      | 20-threads      | 30-threads      | 50-threads      |
-|---------|--------------------------------------|---------|---------|----------------|----------------|----------------|----------------|
-| mnist   | DP-SGD | 93.62%  | 98.21%  | 600.1 sec/iter | 338.0 sec/iter | 283.0 sec/iter | 187.2 sec/iter |
-| mnist   | Our method | 93.99%  | 98.22%  | 148.2 sec/iter | 93.0 sec/iter  | 86.9 sec/iter  | 58.2 sec/iter  |
-| credit  | DP-SGD | 78.00%  | 68.88%  | 446.1 sec/iter | 258.7 sec/iter | 227.5 sec/iter | 164.0 sec/iter |
-| credit  | Our method | 77.99%  | 68.69%  | 132.2 sec/iter | 79.4 sec/iter  | 70.4 sec/iter  | 53.7 sec/iter  |
+### Machine=AMD EPYC 9534 (Multi-threaded), RingDim = 32768
+**Bootstrapping:** Our method – every 3 iterations; DP-SGD – every iteration
+
+| Data   | Training Model | ACC     | AUC     | 10-threads      | 20-threads      | 30-threads      | 50-threads      |
+|--------|----------------|---------|---------|----------------|----------------|----------------|----------------|
+| mnist  | DP-SGD         | 93.62%  | 98.21%  | 600.1 sec/iter | 338.0 sec/iter | 283.0 sec/iter | 187.2 sec/iter |
+| mnist  | Our method     | 93.99%  | 98.22%  | 148.2 sec/iter | 93.0 sec/iter  | 86.9 sec/iter  | 58.2 sec/iter  |
+| credit | DP-SGD         | 78.00%  | 68.88%  | 446.1 sec/iter | 258.7 sec/iter | 227.5 sec/iter | 164.0 sec/iter |
+| credit | Our method     | 77.99%  | 68.69%  | 132.2 sec/iter | 79.4 sec/iter  | 70.4 sec/iter  | 53.7 sec/iter  |
+
+---
+
+### Machine=AMD EPYC 7502 (Multi-threaded), RingDim = 131072
+**Bootstrapping:** Our method – every iteration; DP-SGD – twice every iteration
+
+| Data   | Training Model | ACC     | AUC     | 10-threads        | 20-threads        | 30-threads        | 50-threads        |
+|--------|----------------|---------|---------|------------------|------------------|------------------|------------------|
+| mnist  | DP-SGD         | 93.77%  | 98.20%  | 7996.8 sec/iter  | 4240.0 sec/iter  | 3504.4 sec/iter  | 1813.5 sec/iter  |
+| mnist  | Our method     | 93.97%  | 98.20%  | 566.7 sec/iter   | 442.2 sec/iter   | 409.8 sec/iter   | 350.5 sec/iter   |
+| credit | DP-SGD         | 77.96%  | 69.18%  | 8028.1 sec/iter  | 3910.5 sec/iter  | 3236.3 sec/iter  | 1843.3 sec/iter  |
+| credit | Our method     | 77.99%  | 68.85%  | 521.9 sec/iter   | 449.2 sec/iter   | 394.1 sec/iter   | 343.1 sec/iter   |
+
+---
+
+
 
 
 
