@@ -172,8 +172,8 @@ date
 ## Learning Rate Tuning on MNIST
 
 <p align="center">
-  <img src="lr_tuning_training/clipping_model.png" alt="Algorithm 5 (with barrier)" width="45%"/>
-  <img src="lr_tuning_training/noclip_model.png" alt="Algorithm 4 (no barrier)" width="45%"/>
+  <img src="lr_tuning_training/noclip_model.png" alt="Algorithm 5 (with barrier)" width="45%"/>
+  <img src="lr_tuning_training/clipping_model.png" alt="Algorithm 4 (no barrier)" width="45%"/>
 </p>
 
 <p align="center">
