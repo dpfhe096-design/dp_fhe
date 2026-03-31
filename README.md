@@ -22,8 +22,6 @@ At its core, the system securely executes a mini-batch gradient descent algorith
 | **Secret key distribution** | `UNIFORM_TERNARY` | Efficient ternary secret keys with low noise |
 | **Key switch technique** | `HYBRID` | Memory-efficient relinearization |
 | **Scaling technique** | `FLEXIBLEAUTOEXT` | Automatic rescaling with bootstrapping support |
-| **Multiplicative depth** | '28 + depth_{bootstrap}' | Total depth including internal bootstrapping cost |
-| **Levels after bootstrapping** | 28 | Usable computation levels restored per bootstrapping |
 | **Bootstrapping level budget** | {4, 4} | Precision allocation for bootstrapping |
 | **Security level** |  ~128-bit (at N = 131,072) | Full 128-bit security achieved with larger ring dimension |
 
@@ -144,7 +142,7 @@ date
 **Train Config:** `epsilon=1`, `delta=1e-5`, `T=200`, `lr=0.03` (mnist), `lr=0.06` (credit)
 
 ### Machine=AMD EPYC 9534 (Multi-threaded), RingDim = 32768
-**Bootstrapping:** Our method – every 3 iterations; DP-SGD – every iteration
+**Bootstrapping:** Our method – 1 per 3 iterations (iter depth = 9); DP-SGD – 1 per iteration (iter depth ~24)
 
 | Data   | Training Model | ACC     | AUC     | 10-threads      | 20-threads      | 30-threads      | 50-threads      |
 |--------|----------------|---------|---------|----------------|----------------|----------------|----------------|
@@ -155,8 +153,8 @@ date
 
 ---
 
-### Machine=AMD EPYC 7502 (Multi-threaded), RingDim = 131072
-**Bootstrapping:** Our method – every iteration; DP-SGD – twice every iteration
+### Machine=AMD EPYC 7502 (Multi-threaded), RingDim = 131072  (128 bits secure)
+**Bootstrapping:** Our method – 1 per iteration; DP-SGD – 2 per iteration (to maintain RingDim; less frequent bootstrapping would require 262,144)
 
 | Data   | Training Model | ACC     | AUC     | 10-threads        | 20-threads        | 30-threads        | 50-threads        |
 |--------|----------------|---------|---------|------------------|------------------|------------------|------------------|
@@ -166,22 +164,6 @@ date
 | credit | Our method     | 77.99%  | 68.85%  | 521.9 sec/iter   | 449.2 sec/iter   | 394.1 sec/iter   | 343.1 sec/iter   |
 
 ---
-
-### Additional Results (Rebuttal Only)
-
-## Learning Rate Tuning on MNIST
-
-<p align="center">
-  <img src="lr_tuning_training/noclip_model.png" alt="Algorithm 5 (with barrier)" width="45%"/>
-  <img src="lr_tuning_training/clipping_model.png" alt="Algorithm 4 (no barrier)" width="45%"/>
-</p>
-
-<p align="center">
-  <em>
-  Left: Algorithm 5 (with barrier) remains stable at η = 0.3 and converges faster (~40 iterations).  
-  Right: Algorithm 4 (no barrier) at η = 0.15 shows slow convergence (~100 iterations), while for η > 0.15 the training becomes unstable and diverges (loss = NaN).
-  </em>
-</p>
 
 
 
