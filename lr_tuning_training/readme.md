@@ -7,9 +7,9 @@
   <img src="clipping_model.png" alt="Algorithm 4 (no barrier)" width="45%"/>
 </p>
 
-<p align="center">
+<p align="left">
   <em>
-  Left: Algorithm 5 (with barrier) remains stable at η = 0.3 and converges faster (~40 iterations).  
-  Right: Algorithm 4 (no barrier) at η = 0.15 shows slow convergence (~100 iterations), while for η > 0.15 the training becomes unstable and diverges (loss = NaN).
+  Left: Algorithm 5 (with barrier) remains stable at a larger step size (η = 0.3) and achieves faster convergence, reaching low loss within ~40 iterations.  
+  Right: Algorithm 4 (no barrier) converges slowly at η = 0.15 (~100 iterations). For larger step sizes (η > 0.15), the optimization becomes unstable: weights and intermediate values grow rapidly, leading to numerical overflow in polynomial evaluations and resulting in NaN loss (divergence).
   </em>
 </p>
